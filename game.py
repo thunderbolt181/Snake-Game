@@ -1,77 +1,12 @@
 import time
 import pygame
-from random import randint
 from pygame.locals import * # imported KEYDOWN, QUIT
-
-SIZE = 25
-SCREEN_X = 1000
-SCREEN_Y = 800
-BACKGROUND_COLOR = (66, 66, 97)
-
-
-class Apple:
-    def __init__(self,parent_screen) -> None:
-        self.img = self.block = pygame.image.load('resources/apple.png').convert()
-        self.img = pygame.transform.scale(self.img,(SIZE,SIZE))
-        self.parent_screen = parent_screen
-        self.x = 1
-        self.y = 1
-        self.move()
-
-    def draw(self):
-        self.parent_screen.blit(self.img,(self.x,self.y))
-
-    def move(self):
-        self.x = randint(0,(SCREEN_X//25)-1)*SIZE
-        self.y = randint(0,(SCREEN_Y//25)-1)*SIZE
-        self.draw()
-
-class Snake:
-    def __init__(self,parent_screen, length) -> None:
-        self.parent_screen = parent_screen
-        self.block = pygame.image.load('resources/snake.png').convert()
-        self.block = pygame.transform.scale(self.block,(SIZE,SIZE))
-        self.y = [SIZE]*length
-        self.x = [SIZE]*length
-        self.direction = "DOWN"
-        self.length = length
-
-    def draw(self):
-        self.parent_screen.fill(BACKGROUND_COLOR)
-        for i in range(self.length):
-            self.parent_screen.blit(self.block,(self.x[i],self.y[i]))
-
-    def walk(self):
-        for i in range(self.length-1,0,-1):
-            self.x[i] = self.x[i-1]
-            self.y[i] = self.y[i-1]
-
-        if self.direction == "DOWN":
-            self.y[0] += SIZE
-        elif self.direction == "UP":
-            self.y[0] -= SIZE
-        elif self.direction == "RIGHT":
-            self.x[0] += SIZE
-        elif self.direction == "LEFT":
-            self.x[0] -= SIZE
-        
-        self.draw()
-
-    def increase_length(self):
-        self.length+=1
-        self.x.append(-1)
-        self.y.append(-1)
+from init import SIZE, SCREEN_X, SCREEN_Y, BACKGROUND_COLOR
+from elements import Snake, Apple
 
 class Game:
-    def __init__(self) -> None:
-        # initlizing pygame
-        pygame.init()
-        pygame.mixer.init()
-        self.play_background_music()
-
-        # making surface
-        self.surface = pygame.display.set_mode((SCREEN_X,SCREEN_Y))
-        self.surface.fill(BACKGROUND_COLOR)
+    def __init__(self, surface) -> None:
+        self.surface = surface
 
         # making a Snake
         length = 3
@@ -138,10 +73,6 @@ class Game:
         while running:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        pygame.mixer.music.unpause()
-                        self.score=0
-                        pause=False
                     if not pause:
                         if event.key == K_UP and not self.snake.direction == "DOWN":
                             self.snake.direction="UP"
@@ -152,9 +83,17 @@ class Game:
                         if event.key == K_RIGHT and not self.snake.direction == "LEFT":
                             self.snake.direction = "RIGHT"
                     self.snake.draw()
+                if event.type == MOUSEBUTTONDOWN and pause:
+                    if event.button == 1:
+                        pos = pygame.mouse.get_pos()
+                        if 300 <= pos[0] <= 455 and 500 <= pos[1] <= 545:
+                            pygame.mixer.music.unpause()
+                            self.score=0
+                            pause=False
+                        if 495 <= pos[0] <= 575 and 500 <= pos[1] <= 545:
+                            running = False
                 elif event.type == QUIT:
-                    running=False
-
+                    raise Exception("QUIT")
             try:
                 if not pause:
                     self.play()
@@ -166,14 +105,16 @@ class Game:
             time.sleep(0.1)
         
     def show_game_over(self):
-        self.surface.fill(BACKGROUND_COLOR)
+        # self.surface.fill(BACKGROUND_COLOR)
         font = pygame.font.SysFont('arial',40)
         over = font.render(f"Game Over", True, (200, 200, 200))
-        self.surface.blit(over, (300, 300))
+        self.surface.blit(over, (400, 300))
         score = font.render(f"Score: {self.snake.length}", True, (200, 200, 200))
-        self.surface.blit(score, (300, 400))
-        replay = font.render(f"Press Enter to Play the Game Again", True, (200, 200, 200))
+        self.surface.blit(score, (400, 400))
+        replay = font.render(f"Play Again", True, (200, 200, 200))
         self.surface.blit(replay, (300, 500))
+        back = font.render(f"Back", True, (200, 200, 200))
+        self.surface.blit(back, (500, 500))
         pygame.display.flip()
         pygame.mixer.music.pause()
 
@@ -186,9 +127,6 @@ class Game:
         self.apple = Apple(self.surface)
         self.apple.draw()
 
-
-if __name__ == "__main__":
-    game = Game()
-    game.run()
-
-    
+if __name__=="__main__":
+    play = Game()
+    play.run()
