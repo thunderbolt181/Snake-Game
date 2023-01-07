@@ -2,37 +2,42 @@ import time
 import pygame
 from random import randint
 from pygame.locals import * # imported KEYDOWN, QUIT
-from init import SIZE, SCREEN_X, SCREEN_Y, BACKGROUND_COLOR
+from settings import game_setting
+
 
 class Apple:
-    def __init__(self,parent_screen) -> None:
+    def __init__(self,parent_screen,snake) -> None:
         self.img = self.block = pygame.image.load('resources/apple.png').convert()
-        self.img = pygame.transform.scale(self.img,(SIZE,SIZE))
+        self.img = pygame.transform.scale(self.img,(game_setting.size,game_setting.size))
         self.parent_screen = parent_screen
         self.x = 1
         self.y = 1
+        self.snake = snake
         self.move()
 
     def draw(self):
         self.parent_screen.blit(self.img,(self.x,self.y))
 
     def move(self):
-        self.x = randint(0,(SCREEN_X//25)-1)*SIZE
-        self.y = randint(0,(SCREEN_Y//25)-1)*SIZE
-        self.draw()
+        while True:
+            self.x = randint(0,(game_setting.screen_x//25)-1)*game_setting.size
+            self.y = randint(0,(game_setting.screen_y//25)-1)*game_setting.size
+            if self.x not in self.snake.x and self.y not in self.snake.y:
+                self.draw()
+                break
 
 class Snake:
     def __init__(self,parent_screen, length) -> None:
         self.parent_screen = parent_screen
         self.block = pygame.image.load('resources/snake.png').convert()
-        self.block = pygame.transform.scale(self.block,(SIZE,SIZE))
-        self.y = [SIZE]*length
-        self.x = [SIZE]*length
+        self.block = pygame.transform.scale(self.block,(game_setting.size,game_setting.size))
+        self.y = [game_setting.size]*length
+        self.x = [game_setting.size]*length
         self.direction = "DOWN"
         self.length = length
 
     def draw(self):
-        self.parent_screen.fill(BACKGROUND_COLOR)
+        self.parent_screen.fill(game_setting.background_color)
         for i in range(self.length):
             self.parent_screen.blit(self.block,(self.x[i],self.y[i]))
 
@@ -42,13 +47,13 @@ class Snake:
             self.y[i] = self.y[i-1]
 
         if self.direction == "DOWN":
-            self.y[0] += SIZE
+            self.y[0] += game_setting.size
         elif self.direction == "UP":
-            self.y[0] -= SIZE
+            self.y[0] -= game_setting.size
         elif self.direction == "RIGHT":
-            self.x[0] += SIZE
+            self.x[0] += game_setting.size
         elif self.direction == "LEFT":
-            self.x[0] -= SIZE
+            self.x[0] -= game_setting.size
         
         self.draw()
 
