@@ -1,3 +1,5 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from game import Game
 from pygame.locals import * # imported KEYDOWN, QUIT
@@ -14,10 +16,10 @@ class Menu:
 
         # making screen
         self.screen = pygame.display.set_mode((game_setting.screen_x,game_setting.screen_y))
-        self.screen.fill(game_setting.background_color)
+        game_setting.render_background(self.screen)
 
     def display_menu(self):
-        self.screen.fill(game_setting.background_color)
+        game_setting.render_background(self.screen)
         font = pygame.font.SysFont('arial',30)
         over = font.render(f"Start Game", True, (200, 200, 200))
         self.screen.blit(over, (300, 400))

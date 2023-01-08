@@ -10,9 +10,12 @@ class Settings:
         self.background_color = (66, 66, 97)
         self.music = True
         self.g_sound = True
- 
+        self.speed = 0.25
+    
+    def render_background(self,surface):
+        bg = pygame.image.load('resources/background.jpg').convert()
+        surface.blit(bg, (0,0))
         
-
     def draw(self):
         font = pygame.font.SysFont('arial',25)
 
@@ -33,7 +36,7 @@ class Settings:
     def run(self, surface):
 
         self.surface = surface
-        self.surface.fill(self.background_color)
+        self.render_background(self.surface)
 
         running = True
 
@@ -52,4 +55,4 @@ class Settings:
                     raise Exception("QUIT")
             self.draw()
         
-game_setting = Settings()                    
+game_setting = Settings()

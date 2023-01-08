@@ -63,6 +63,7 @@ class Game:
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound('ding')
             self.score +=1
+            if self.score%5==0 and game_setting.speed > 0.06:game_setting.speed-=0.05
             self.snake.increase_length()
             self.apple.move()
 
@@ -113,13 +114,13 @@ class Game:
                 self.show_game_over()
                 self.reset()
 
-            time.sleep(0.1)
+            time.sleep(game_setting.speed)
         
     def show_game_over(self):
         font = pygame.font.SysFont('arial',40)
         over = font.render(f"Game Over", True, (200, 200, 200))
         self.surface.blit(over, (400, 300))
-        score = font.render(f"Score: {self.snake.length}", True, (200, 200, 200))
+        score = font.render(f"Score: {self.score}", True, (200, 200, 200))
         self.surface.blit(score, (400, 400))
         replay = font.render(f"Play Again", True, (200, 200, 200))
         self.surface.blit(replay, (300, 500))
@@ -129,6 +130,8 @@ class Game:
         pygame.mixer.music.pause()
 
     def reset(self):
+        game_setting.speed=0.25
+
         # resetting Snake
         self.snake = Snake(self.surface,1)
         self.snake.draw()

@@ -37,7 +37,7 @@ class Snake:
         self.length = length
 
     def draw(self):
-        self.parent_screen.fill(game_setting.background_color)
+        game_setting.render_background(self.parent_screen)
         for i in range(self.length):
             self.parent_screen.blit(self.block,(self.x[i],self.y[i]))
 
